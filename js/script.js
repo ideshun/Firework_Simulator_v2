@@ -120,14 +120,14 @@ const store = {
     // at render time, and parsing on change.
     config: {
       quality: String(IS_HIGH_END_DEVICE ? QUALITY_HIGH : QUALITY_NORMAL), // will be mirrored to a global variable named `quality` in `configDidUpdate`, for perf.
-      shell: "Random",
+      shell: "Random", // 烟花类型
       size: IS_DESKTOP
         ? "3" // Desktop default
         : IS_HEADER
         ? "1.2" // Profile header default (doesn't need to be an int)
         : "2", // Mobile default
       autoLaunch: true,
-      finale: false,
+      finale: false, // 同时放更多烟花
       skyLighting: SKY_LIGHT_NORMAL + "",
       hideControls: IS_HEADER,
       longExposure: false,
@@ -163,7 +163,9 @@ const store = {
           break;
         case "1.2":
           config.quality = data.quality;
+          config.shell = data.shell;
           config.size = data.size;
+          config.finale = data.finale;
           config.skyLighting = data.skyLighting;
           config.scaleFactor = data.scaleFactor;
           break;
@@ -200,7 +202,9 @@ const store = {
         schemaVersion: "1.2",
         data: {
           quality: config.quality,
+          shell: config.shell || "Random",
           size: config.size,
+          finale: Boolean(config.finale),
           skyLighting: config.skyLighting,
           scaleFactor: config.scaleFactor,
         },
@@ -333,6 +337,7 @@ const appNodes = {
   fullscreenFormOption: ".form-option--fullscreen",
   fullscreen: ".fullscreen",
   fullscreenLabel: ".fullscreen-label",
+  resetBtn: ".resetBtn",
   longExposure: ".long-exposure",
   longExposureLabel: ".long-exposure-label",
 
@@ -444,6 +449,12 @@ appNodes.hideControls.addEventListener("click", () =>
 );
 appNodes.fullscreen.addEventListener("click", () =>
   setTimeout(toggleFullscreen, 0)
+);
+appNodes.resetBtn.addEventListener("click", () =>
+  setTimeout(() => {
+    localStorage.clear()
+    location.reload()
+  }, 0)
 );
 // Changing scaleFactor requires triggering resize handling code as well.
 appNodes.scaleFactor.addEventListener("input", () => {
@@ -2279,7 +2290,7 @@ if (IS_HEADER) {
   init();
 } else {
   // Allow status to render, then preload assets and start app.
-  setLoadingStatus("Lighting Fuses");
+  setLoadingStatus("正在点燃导火线");
   setTimeout(() => {
     soundManager.preload().then(init, (reason) => {
       // Codepen preview doesn't like to load the audio, so just init to fix the preview for now.

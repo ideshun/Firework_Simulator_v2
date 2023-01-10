@@ -159,6 +159,10 @@ body {
       -ms-user-select: none;
           user-select: none;
 }
+.menu .resetBtn {
+  text-align: center;
+  cursor: pointer;
+}
 .menu .form-option--select select {
   display: block;
   width: 50%;
